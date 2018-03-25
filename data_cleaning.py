@@ -1,6 +1,10 @@
 import pandas as pd
 from pymorphy2 import MorphAnalyzer
 import re
+import progressbar
+from multiprocessing import Pool
+
+TEST = True
 
 positive_tweets = pd.read_csv('data/positive.csv', sep = ';', header = None)
 negative_tweets = pd.read_csv('data/negative.csv', sep = ';', header = None)
@@ -25,7 +29,22 @@ def clean(txt, use_lemmatization = False):
         result = ' '.join(temp)
     return result
 
-dataset_with_lemmatization = dataset['text'].apply(lambda x : clean(x, use_lemmatization = True))
-dataset_without_lemmatization = dataset['text'].apply(lambda x : clean(x, use_lemmatization = False))
+if not TEST:
+	dataset_with_lemmatization = dataset['text'].apply(lambda x : clean(x, use_lemmatization = True))
+	dataset_without_lemmatization = dataset['text'].apply(lambda x : clean(x, use_lemmatization = False))
+else:
+	pool = Pool()
+	dataset_without_lemmatization = dataset['text']
+	bar = progressbar.ProgressBar(max_value=len(dataset['text']))
+	for i in range(len(dataset['text'])):
+		dataset_without_lemmatization[i] = clean(dataset_without_lemmatization[i], use_lemmatization = False)
+		bar.update(i)
+
+	dataset_with_lemmatization = dataset['text']
+	bar = progressbar.ProgressBar(max_value=len(dataset['text']))
+	for i in range(len(dataset['text'])):
+		dataset_with_lemmatization[i] = clean(dataset_with_lemmatization[i], use_lemmatization = False)
+		bar.update(i)
+
 dataset_with_lemmatization.to_csv("data/data_with_lemmatization.csv")
 dataset_without_lemmatization.to_csv("data/data_without_lemmatization.csv")
