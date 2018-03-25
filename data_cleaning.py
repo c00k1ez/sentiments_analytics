@@ -13,11 +13,12 @@ dataset.columns = ['text', 'label']
 
 dataset = dataset.sample(frac = 1, random_state = 42).reset_index(drop = True)
 
+analyzer = MorphAnalyzer() 
+
 def clean(txt, use_lemmatization = False):
     txt = txt.lower()
     txt = re.sub(r'\s+', ' ', txt)
     letters = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя '
-    analyzer = MorphAnalyzer() if use_lemmatization else None
     result = ''
     for letter in txt:
         if letter in letters:
