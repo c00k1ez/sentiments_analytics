@@ -1,5 +1,4 @@
 import pandas as pd
-from sklearn.utils import shuffle
 from pymorphy2 import MorphAnalyzer
 import re
 
